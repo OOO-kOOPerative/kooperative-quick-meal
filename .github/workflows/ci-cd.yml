@@ -43,10 +43,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality-check
     if: github.ref == 'refs/heads/main'
+    
+    # 👇 ВАЖНО: Добавляем environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     permissions:
       id-token: write
       pages: write
       contents: read
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
