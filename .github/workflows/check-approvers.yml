@@ -1,4 +1,4 @@
-name: Check Required Approvers
+name: Check 4/5 Approvals Required
 
 on:
   pull_request:
@@ -15,22 +15,23 @@ jobs:
         run: |
           if [ "${{ github.event.pull_request.base.ref }}" = "main" ]; then
             echo "is_main=true" >> $GITHUB_OUTPUT
-            echo "Checking approvals for main branch"
+            echo "Strict approval check for main branch (4/5 required)"
           else
             echo "is_main=false" >> $GITHUB_OUTPUT
-            echo "Not main branch, skipping approval check"
+            echo "Not main branch, skipping strict approval check"
           fi
 
-      - name: Validate team approvals
+      - name: Validate 4 out of 5 team approvals
         if: steps.check-branch.outputs.is_main == 'true'
         run: |
-          # Список пользователей, которые могут аппрувить
-          REQUIRED_APPROVERS="Ognezvezdd,seonsaen,loxxych,SignumGusik,gogogok"
+          # Все 5 членов команды
+          TEAM_MEMBERS=("Ognezvezdd" "seonsaen" "loxxych" "SignumGusik" "gogogok")
           PR_NUMBER=${{ github.event.pull_request.number }}
           REPO=${{ github.repository }}
           
+          echo "Team members: ${TEAM_MEMBERS[@]}"
           echo "Checking approvals for PR #$PR_NUMBER"
-          echo "Required approvers: $REQUIRED_APPROVERS"
+          echo "Required: 4 approvals from 5 team members"
           
           # Получаем список ревью через GitHub API
           REVIEWS=$(curl -s \
@@ -44,22 +45,30 @@ jobs:
           echo "Current approvers:"
           echo "$APPROVERS"
           
-          # Проверяем есть ли хотя бы один required approver
-          HAS_APPROVAL=false
-          IFS=',' read -ra REQUIRED_ARRAY <<< "$REQUIRED_APPROVERS"
+          # Считаем аппрувы от членов команды
+          TEAM_APPROVAL_COUNT=0
+          APPROVED_TEAM_MEMBERS=()
           
-          for approver in "${REQUIRED_ARRAY[@]}"; do
-            if echo "$APPROVERS" | grep -qi "$approver"; then
-              HAS_APPROVAL=true
-              echo "Found approval from: $approver"
-              break
+          for member in "${TEAM_MEMBERS[@]}"; do
+            if echo "$APPROVERS" | grep -qi "^$member$"; then
+              TEAM_APPROVAL_COUNT=$((TEAM_APPROVAL_COUNT + 1))
+              APPROVED_TEAM_MEMBERS+=("$member")
+              echo "Team member approved: $member"
             fi
           done
           
-          if [ "$HAS_APPROVAL" = true ]; then
-            echo "PR has required team approval!"
+          echo "Result: $TEAM_APPROVAL_COUNT/5 team approvals"
+          echo "Approved by: ${APPROVED_TEAM_MEMBERS[*]}"
+          
+          if [ $TEAM_APPROVAL_COUNT -ge 4 ]; then
+            echo "SUCCESS: PR has $TEAM_APPROVAL_COUNT/4 required team approvals!"
           else
-            echo "PR missing approval from required team members"
-            echo "Please get approval from one of: $REQUIRED_APPROVERS"
+            echo "FAILED: PR has only $TEAM_APPROVAL_COUNT/4 team approvals"
+            echo "Still need approvals from:"
+            for member in "${TEAM_MEMBERS[@]}"; do
+              if ! echo "$APPROVERS" | grep -qi "^$member$"; then
+                echo "   - @$member"
+              fi
+            done
             exit 1
           fi
