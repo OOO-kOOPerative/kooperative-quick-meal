@@ -1,0 +1,65 @@
+name: Check Required Approvers
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+jobs:
+  check-approvals:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR targets main branch
+        id: check-branch
+        run: |
+          if [ "${{ github.event.pull_request.base.ref }}" = "main" ]; then
+            echo "is_main=true" >> $GITHUB_OUTPUT
+            echo "Checking approvals for main branch"
+          else
+            echo "is_main=false" >> $GITHUB_OUTPUT
+            echo "Not main branch, skipping approval check"
+          fi
+
+      - name: Validate team approvals
+        if: steps.check-branch.outputs.is_main == 'true'
+        run: |
+          # Список пользователей, которые могут аппрувить
+          REQUIRED_APPROVERS="Ognezvezdd,seonsaen,loxxych,SignumGusik,gogogok"
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          REPO=${{ github.repository }}
+          
+          echo "Checking approvals for PR #$PR_NUMBER"
+          echo "Required approvers: $REQUIRED_APPROVERS"
+          
+          # Получаем список ревью через GitHub API
+          REVIEWS=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/reviews")
+          
+          # Извлекаем пользователей, которые APPROVED
+          APPROVERS=$(echo "$REVIEWS" | jq -r '.[] | select(.state == "APPROVED") | .user.login' | sort | uniq)
+          
+          echo "Current approvers:"
+          echo "$APPROVERS"
+          
+          # Проверяем есть ли хотя бы один required approver
+          HAS_APPROVAL=false
+          IFS=',' read -ra REQUIRED_ARRAY <<< "$REQUIRED_APPROVERS"
+          
+          for approver in "${REQUIRED_ARRAY[@]}"; do
+            if echo "$APPROVERS" | grep -qi "$approver"; then
+              HAS_APPROVAL=true
+              echo "Found approval from: $approver"
+              break
+            fi
+          done
+          
+          if [ "$HAS_APPROVAL" = true ]; then
+            echo "PR has required team approval!"
+          else
+            echo "PR missing approval from required team members"
+            echo "Please get approval from one of: $REQUIRED_APPROVERS"
+            exit 1
+          fi
