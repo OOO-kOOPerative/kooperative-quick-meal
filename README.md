@@ -1,7 +1,7 @@
 # Kooperative Quick Meal
 
-![CI/CD Status](https://github.com/SignumGusik/kooperative-quick-meal/workflows/CI/CD%20Pipeline/badge.svg)
-[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://SignumGusik.github.io/kooperative-quick-meal)
+![CI/CD Status](https://github.com/OOO-kOOPerative/kooperative-quick-meal/workflows/CI/CD%20Pipeline/badge.svg)
+[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://OOO-kOOPerative.github.io/kooperative-quick-meal)
 
 ## Описание
 
