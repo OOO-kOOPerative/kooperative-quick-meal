@@ -9,10 +9,7 @@
 
 ## Документация
 
-- [Документация по работе с репозиторием](docs/documentation.md)
-- [Анкета](content/questionnaire.md)
-- [Протокол](content/protocol.md)
-- [Расписание интервью](content/interview-schedule.md)
+- [Документация по работе с репозиторием](docs/repository-instruction.md)
 
 ## Контент
 
