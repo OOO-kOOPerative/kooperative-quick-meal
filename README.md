@@ -16,6 +16,7 @@
 - [Анкета](content/questionnaire.md)
 - [Протокол](content/protocol.md)
 - [Расписание интервью](content/interview-schedule.md)
+- [План коммуникации](content/communication_plan.md)
 
 ---
 
