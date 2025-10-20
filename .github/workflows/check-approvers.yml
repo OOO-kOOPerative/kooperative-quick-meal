@@ -1,0 +1,74 @@
+name: Check 4/5 Approvals Required
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+jobs:
+  check-approvals:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR targets main branch
+        id: check-branch
+        run: |
+          if [ "${{ github.event.pull_request.base.ref }}" = "main" ]; then
+            echo "is_main=true" >> $GITHUB_OUTPUT
+            echo "Strict approval check for main branch (4/5 required)"
+          else
+            echo "is_main=false" >> $GITHUB_OUTPUT
+            echo "Not main branch, skipping strict approval check"
+          fi
+
+      - name: Validate 4 out of 5 team approvals
+        if: steps.check-branch.outputs.is_main == 'true'
+        run: |
+          # Все 5 членов команды
+          TEAM_MEMBERS=("Ognezvezdd" "seonsaen" "loxxych" "SignumGusik" "gogogok")
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          REPO=${{ github.repository }}
+          
+          echo "Team members: ${TEAM_MEMBERS[@]}"
+          echo "Checking approvals for PR #$PR_NUMBER"
+          echo "Required: 4 approvals from 5 team members"
+          
+          # Получаем список ревью через GitHub API
+          REVIEWS=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/reviews")
+          
+          # Извлекаем пользователей, которые APPROVED
+          APPROVERS=$(echo "$REVIEWS" | jq -r '.[] | select(.state == "APPROVED") | .user.login' | sort | uniq)
+          
+          echo "Current approvers:"
+          echo "$APPROVERS"
+          
+          # Считаем аппрувы от членов команды
+          TEAM_APPROVAL_COUNT=0
+          APPROVED_TEAM_MEMBERS=()
+          
+          for member in "${TEAM_MEMBERS[@]}"; do
+            if echo "$APPROVERS" | grep -qi "^$member$"; then
+              TEAM_APPROVAL_COUNT=$((TEAM_APPROVAL_COUNT + 1))
+              APPROVED_TEAM_MEMBERS+=("$member")
+              echo "Team member approved: $member"
+            fi
+          done
+          
+          echo "Result: $TEAM_APPROVAL_COUNT/5 team approvals"
+          echo "Approved by: ${APPROVED_TEAM_MEMBERS[*]}"
+          
+          if [ $TEAM_APPROVAL_COUNT -ge 4 ]; then
+            echo "SUCCESS: PR has $TEAM_APPROVAL_COUNT/4 required team approvals!"
+          else
+            echo "FAILED: PR has only $TEAM_APPROVAL_COUNT/4 team approvals"
+            echo "Still need approvals from:"
+            for member in "${TEAM_MEMBERS[@]}"; do
+              if ! echo "$APPROVERS" | grep -qi "^$member$"; then
+                echo "   - @$member"
+              fi
+            done
+            exit 1
+          fi
