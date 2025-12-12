@@ -9,8 +9,8 @@
     assert(cfg.approved_by.name != none)
     assert(cfg.approved_by.position != none)
     assert(cfg.university_name != none)
-    assert(cfg.faculty_name != none)
-    assert(cfg.edu_program_name != none)
+    //assert(cfg.faculty_name != none)
+    //assert(cfg.edu_program_name != none)
     assert(cfg.year != none)
 
     let un(n) = "_" * n
@@ -44,9 +44,9 @@
 
             #text(weight: "bold", cfg.university_name)
 
-            #cfg.faculty_name
+            //#cfg.faculty_name
 
-            #cfg.edu_program_name
+            //#cfg.edu_program_name
         ]
 
         let approve_table = grid(
@@ -94,13 +94,13 @@
         ]
 
         let student_info = align(right)[
-            #set par(spacing: 1em)
+            #set par(spacing: 0.4em)
 
-            Исполнитель:
+            Исполнители:
 
             #cfg.students.map(
               student => [
-                Студент группы #student.group
+                 #student.role ООО "кООПератив", студент группы #student.group
 
                 #un(13) / #student.name /
     
