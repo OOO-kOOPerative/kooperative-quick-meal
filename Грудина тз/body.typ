@@ -386,13 +386,21 @@
     align: center + horizon,
     table.header([*Приложение*], [*Ссылка*]),
 
-    [Яндекс Музыка], [https://music.yandex.ru/],
-    [Spotify], [https://www.spotify.com/],
-    [Apple Music], [https://music.apple.com/],
+    [Yazio], [https://play.google.com/store/apps/details?id=com.yazio.android&hl=ru],
+    [Eat this much], [https://play.google.com/store/search?q=eat%20this%20miuch&c=apps&hl=ru],
+    [Lifesum], [https://play.google.com/store/search?q=Lifesum&c=apps&hl=ru],
+    [Nutri Coach], [https://www.nutricoach.com/],
+    [FoodBok], [https://foodbok.com/ru],
+    [Mealime], [https://www.mealime.com/v],
+    [Eatr], [https://play.google.com/store/search?q=eatr&c=apps&hl=ru],
+    [Nutrilio], [https://play.google.com/store/apps/details?id=com.app.aifit&hl=ru],
+    [Зожник], [https://play.google.com/store/search?q=%D0%B7%D0%BE%D0%B6%D0%BD%D0%B8%D0%BA&c=apps&hl=ru],
+    [Sidechef], [https://play.google.com/store/search?q=sidechef&c=apps&hl=ru],
+    [MacroFactor], [https://play.google.com/store/search?q=MacroFactor&c=apps&hl=ru],
   )
 )
 
-Дата обращения: 03.12.24.
+Дата обращения: 16.12.25.
 
 = ПРИЛОЖЕНИЕ 2. АНКЕТА №1. ОБСЛЕДОВАНИЕ ТРЕБОВАНИЙ И БЕЗНЕС-ПРОЦЕССОВ QUICKMEAL
 
