@@ -86,7 +86,8 @@
 == Требования к функциональным характеристикам
 === Требования к составу выполняемых функций
 
-#box(inset: (left: 20mm))[ 4.1.1.1. Регистрация и вход.]
+
+#box(inset: (left: 15mm))[ 4.1.1.1. Регистрация и вход.]
 
 #box(inset: (left: 30mm))[ 4.1.1.1.1. Регистрация через email.]
 
@@ -939,7 +940,7 @@
     caption: [Ограничения на входные данные],
     table(
         columns: (auto, auto, auto, auto, auto),
-        rows: (15mm, auto),
+        rows: (20mm, auto),
         align: center + horizon,
         table.header(
             [*Наименование данных*],
